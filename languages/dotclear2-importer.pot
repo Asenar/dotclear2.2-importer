@@ -1,0 +1,243 @@
+# Translation of the WordPress plugin   by .
+# Copyright (C) 2010 
+# This file is distributed under the same license as the  package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/dotclear2-importer\n"
+"POT-Creation-Date: 2010-06-01 13:26+0300\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: dotclear2-importer.php:104
+msgid "Import DotClear"
+msgstr ""
+
+#: dotclear2-importer.php:105
+msgid ""
+"Steps may take a few minutes depending on the size of your database. Please "
+"be patient."
+msgstr ""
+
+#: dotclear2-importer.php:115
+msgid ""
+"Howdy! This importer allows you to extract posts from a DotClear database "
+"into your WordPress site.  Mileage may vary."
+msgstr ""
+
+#: dotclear2-importer.php:116
+msgid "Your DotClear Configuration settings are as follows:"
+msgstr ""
+
+#: dotclear2-importer.php:120
+msgid "Import Categories"
+msgstr ""
+
+#: dotclear2-importer.php:192
+msgid "Importing Categories..."
+msgstr ""
+
+#: dotclear2-importer.php:212
+#, php-format
+msgid "Done! <strong>%1$s</strong> category imported."
+msgid_plural "Done! <strong>%1$s</strong> categories imported."
+msgstr[0] ""
+msgstr[1] ""
+
+#: dotclear2-importer.php:215
+msgid "No Categories to Import!"
+msgstr ""
+
+#: dotclear2-importer.php:227
+msgid "Importing Users..."
+msgstr ""
+
+#: dotclear2-importer.php:280
+#, php-format
+msgid "Done! <strong>%1$s</strong> users imported."
+msgstr ""
+
+#: dotclear2-importer.php:284
+msgid "No Users to Import!"
+msgstr ""
+
+#: dotclear2-importer.php:298
+msgid "Importing Posts..."
+msgstr ""
+
+#: dotclear2-importer.php:378
+#, php-format
+msgid "Done! <strong>%1$s</strong> posts imported."
+msgstr ""
+
+#: dotclear2-importer.php:391
+msgid "Importing Comments..."
+msgstr ""
+
+#: dotclear2-importer.php:434
+#, php-format
+msgid "Done! <strong>%1$s</strong> comments imported."
+msgstr ""
+
+#: dotclear2-importer.php:437
+msgid "No Comments to Import!"
+msgstr ""
+
+#: dotclear2-importer.php:448
+msgid "Importing Links..."
+msgstr ""
+
+#: dotclear2-importer.php:485
+#, php-format
+msgid "Done! <strong>%s</strong> link or link category imported."
+msgid_plural "Done! <strong>%s</strong> links or link categories imported."
+msgstr[0] ""
+msgstr[1] ""
+
+#: dotclear2-importer.php:489
+msgid "No Links to Import!"
+msgstr ""
+
+#: dotclear2-importer.php:503
+msgid "Import Users"
+msgstr ""
+
+#: dotclear2-importer.php:515
+msgid "Import Posts"
+msgstr ""
+
+#: dotclear2-importer.php:528
+msgid "Import Comments"
+msgstr ""
+
+#: dotclear2-importer.php:539
+msgid "Import Links"
+msgstr ""
+
+#: dotclear2-importer.php:552
+msgid "Finish"
+msgstr ""
+
+#: dotclear2-importer.php:574
+msgid ""
+"Welcome to WordPress.  We hope (and expect!) that you will find this "
+"platform incredibly rewarding!  As a new WordPress user coming from "
+"DotClear, there are some things that we would like to point out.  Hopefully, "
+"they will help your transition go as smoothly as possible."
+msgstr ""
+
+#: dotclear2-importer.php:575
+msgid "Users"
+msgstr ""
+
+#: dotclear2-importer.php:576
+#, php-format
+msgid ""
+"You have already setup WordPress and have been assigned an administrative "
+"login and password.  Forget it.  You didn&#8217;t have that login in "
+"DotClear, why should you have it here?  Instead we have taken care to import "
+"all of your users into our system.  Unfortunately there is one downside.  "
+"Because both WordPress and DotClear uses a strong encryption hash with "
+"passwords, it is impossible to decrypt it and we are forced to assign "
+"temporary passwords to all your users.  <strong>Every user has the same "
+"username, but their passwords are reset to password123.</strong>  So <a href="
+"\"%1$s\">Log in</a> and change it."
+msgstr ""
+
+#: dotclear2-importer.php:577
+msgid "Preserving Authors"
+msgstr ""
+
+#: dotclear2-importer.php:578
+msgid ""
+"Secondly, we have attempted to preserve post authors.  If you are the only "
+"author or contributor to your blog, then you are safe.  In most cases, we "
+"are successful in this preservation endeavor.  However, if we cannot "
+"ascertain the name of the writer due to discrepancies between database "
+"tables, we assign it to you, the administrative user."
+msgstr ""
+
+#: dotclear2-importer.php:579
+msgid "Textile"
+msgstr ""
+
+#: dotclear2-importer.php:580
+msgid ""
+"Also, since you&#8217;re coming from DotClear, you probably have been using "
+"Textile to format your comments and posts.  If this is the case, we "
+"recommend downloading and installing <a href=\"http://www.huddledmasses.org/"
+"category/development/wordpress/textile/\">Textile for WordPress</a>.  Trust "
+"me&#8230; You&#8217;ll want it."
+msgstr ""
+
+#: dotclear2-importer.php:581
+msgid "WordPress Resources"
+msgstr ""
+
+#: dotclear2-importer.php:582
+msgid ""
+"Finally, there are numerous WordPress resources around the internet.  Some "
+"of them are:"
+msgstr ""
+
+#: dotclear2-importer.php:584
+msgid "<a href=\"http://wordpress.org/\">The official WordPress site</a>"
+msgstr ""
+
+#: dotclear2-importer.php:585
+msgid ""
+"<a href=\"http://wordpress.org/support/\">The WordPress support forums</a>"
+msgstr ""
+
+#: dotclear2-importer.php:586
+msgid ""
+"<a href=\"http://codex.wordpress.org/\">The Codex (In other words, the "
+"WordPress Bible)</a>"
+msgstr ""
+
+#: dotclear2-importer.php:588
+#, php-format
+msgid ""
+"That&#8217;s it! What are you waiting for? Go <a href=\"%1$s\">log in</a>!"
+msgstr ""
+
+#: dotclear2-importer.php:593
+msgid "DotClear Database User:"
+msgstr ""
+
+#: dotclear2-importer.php:594
+msgid "DotClear Database Password:"
+msgstr ""
+
+#: dotclear2-importer.php:595
+msgid "DotClear Database Name:"
+msgstr ""
+
+#: dotclear2-importer.php:596
+msgid "DotClear Database Host:"
+msgstr ""
+
+#: dotclear2-importer.php:597
+msgid "DotClear Table prefix:"
+msgstr ""
+
+#: dotclear2-importer.php:598
+msgid "Originating character set:"
+msgstr ""
+
+#: dotclear2-importer.php:685
+msgid "DotClear"
+msgstr ""
+
+#: dotclear2-importer.php:685
+msgid ""
+"Import categories, users, posts, comments, and links from a DotClear blog."
+msgstr ""
