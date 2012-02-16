@@ -4,7 +4,7 @@ Donate link:
 Tags: importer, dotclear
 Requires at least: 3.3.1
 Tested up to: 3.3.1
-Stable: 0.3
+Stable tag: 0.3
 
 Import categories, users, posts, comments, and links from a DotClear blog.
 
