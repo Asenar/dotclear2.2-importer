@@ -669,28 +669,54 @@ class Dotclear2_Import extends WP_Importer {
 
 		echo '<form action="admin.php?import=dotclear&amp;step=4" method="post">';
 		wp_nonce_field('import-dotclear');
+		printf('<p>
+		<label for="dc_skip_comments">%s</label>
+		<input type="checkbox" name="dc_skip_comments" value="1" id="dc_skip_comments" /></p>', __('Skip comments:', 'dotclear2-importer'));
 		printf('<p class="submit"><input type="submit" name="submit" class="button" value="%s" /></p>', esc_attr__('Import Comments', 'dotclear2-importer'));
 		echo '</form>';
 	}
 
 	function import_comments() {
-		// Comment Import
-		$comments = $this->get_dc_comments();
-		$this->comments2wp($comments);
+		if (!empty($_POST['dc_skip_comments'])) {
+			if (get_option('dc_skip_comments'))
+				delete_option('dc_skip_comments');
+			add_option('dc_skip_comments', sanitize_user($_POST['dc_skip_comments'], true));
+		}
 
+		$dc_skip_comments = get_option('dc_skip_comments');
+		// NOTE : this is not tested
+		if (!$dc_skip_comments)
+		{
+			// Comment Import
+			$comments = $this->get_dc_comments();
+			$this->comments2wp($comments);
+		}
 		echo '<form action="admin.php?import=dotclear&amp;step=5" method="post">';
 		wp_nonce_field('import-dotclear');
+		printf('<p>
+		<label for="dc_skip_links">%s</label>
+		<input type="checkbox" name="dc_skip_links" value="1" id="dc_skip_links" /></p>', __('Skip links:', 'dotclear2-importer'));
 		printf('<p class="submit"><input type="submit" name="submit" class="button" value="%s" /></p>', esc_attr__('Import Links', 'dotclear2-importer'));
 		echo '</form>';
 	}
 
 	function import_links()
 	{
-		//Link Import
-		$links = $this->get_dc_links();
-		$this->links2wp($links);
-		add_option('dc_links', $links);
+		if (!empty($_POST['dc_skip_links'])) {
+			if (get_option('dc_skip_links'))
+				delete_option('dc_skip_links');
+				add_option('dc_skip_links', sanitize_user($_POST['dc_skip_links'], true));
+		}
 
+		$dc_skip_links = get_option('dc_skip_links');
+		//Link Import
+		// @TODO Really, I don't care about the old links
+		if (!$dc_skip_links)
+		{
+			$links = $this->get_dc_links();
+			$this->links2wp($links);
+			add_option('dc_links', $links);
+		}
 		echo '<form action="admin.php?import=dotclear&amp;step=6" method="post">';
 		wp_nonce_field('import-dotclear');
 		printf('<p class="submit"><input type="submit" name="submit" class="button" value="%s" /></p>', esc_attr__('Finish', 'dotclear2-importer'));
@@ -713,6 +739,8 @@ class Dotclear2_Import extends WP_Importer {
 
 		delete_option('dc_skip_blog_id');
 		delete_option('dc_post_active_only');
+		delete_option('dc_skip_comments');
+		delete_option('dc_skip_links');
 
 		do_action('import_done', 'dotclear');
 		$this->tips();
