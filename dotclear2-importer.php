@@ -130,7 +130,12 @@ class Dotclear2_Import extends WP_Importer {
 		$dbprefix = get_option('dcdbprefix');
 
 		// Get Categories
-		return $dcdb->get_results('SELECT * FROM '.$dbprefix.'category', ARRAY_A);
+		$dc_blog_id = get_option('dc_blog_id');
+		if (!empty($dc_blog_id))
+			$sql = 'SELECT * FROM '.$dbprefix.'category WHERE blog_id="'.$dc_blog_id.'"';
+		else
+			$sql = 'SELECT * FROM '.$dbprefix.'category';
+		return $dcdb->get_results($sql, ARRAY_A);
 	}
 
 	function get_dc_users()
@@ -141,6 +146,19 @@ class Dotclear2_Import extends WP_Importer {
 		set_magic_quotes_runtime(0);
 		$dbprefix = get_option('dcdbprefix');
 
+		$dc_blog_id = get_option('dc_blog_id');
+		if (!empty($dc_blog_id))
+		{
+			$sql = 'SELECT * FROM '.$dbprefix.'user u 
+				INNER JOIN '.$dbprefix.'permissions p 
+					ON u.user_id=p.user_id
+				WHERE 
+					blog_id="'.$dc_blog_id.'"
+				';
+		}
+		else
+			$sql = 'SELECT * FROM '.$dbprefix.'user';
+		return $dcdb->get_results($sql, ARRAY_A);
 		// Get Users
 		return $dcdb->get_results('SELECT * FROM '.$dbprefix.'user', ARRAY_A);
 	}
@@ -153,11 +171,31 @@ class Dotclear2_Import extends WP_Importer {
 		$dbprefix = get_option('dcdbprefix');
 
 		// Get Posts
-		return $dcdb->get_results('SELECT '.$dbprefix.'post.*, '.$dbprefix.'category.cat_title AS post_cat_name
-						FROM '.$dbprefix.'post INNER JOIN '.$dbprefix.'category
-						ON '.$dbprefix.'post.cat_id = '.$dbprefix.'category.cat_id', ARRAY_A);
+		// @TODO pray to have all the correct user imported
+		// @TODO add something to preserve current email over old email
+		$dc_blog_id = get_option('dc_blog_id');
+		if (!empty($dc_blog_id))
+		{
+			$sql = 'SELECT '.$dbprefix.'post.*, '.$dbprefix.'category.cat_title AS post_cat_name
+				FROM '.$dbprefix.'post LEFT JOIN '.$dbprefix.'category
+				ON '.$dbprefix.'post.cat_id = '.$dbprefix.'category.cat_id
+				WHERE '.$dbprefix.'post.blog_id="'.$dc_blog_id.'" ';
+		}
+		else
+		{
+			$sql = 'SELECT '.$dbprefix.'post.*, '.$dbprefix.'category.cat_title AS post_cat_name
+				FROM '.$dbprefix.'post LEFT JOIN '.$dbprefix.'category
+				ON '.$dbprefix.'post.cat_id = '.$dbprefix.'category.cat_id
+				WHERE 1 ';
+		}
+		$dc_post_active_only = get_option('dc_post_active_only');
+		if ($dc_post_active_only)
+			$sql .= ' AND post_status=1';
+
+		return $dcdb->get_results($sql, ARRAY_A);
 	}
 
+	// @TODO : /!\ This is not tested
 	function get_dc_comments()
 	{
 		global $wpdb;
@@ -177,7 +215,18 @@ class Dotclear2_Import extends WP_Importer {
 		set_magic_quotes_runtime(0);
 		$dbprefix = get_option('dcdbprefix');
 
-		return $dcdb->get_results('SELECT * FROM '.$dbprefix.'link ORDER BY link_position', ARRAY_A);
+		// @TODO not tested
+		$dc_blog_id = get_option('dc_blog_id');
+		if (!empty($dc_blog_id))
+		{
+			$sql = 'SELECT * FROM '.$dbprefix.'link
+			WHERE blog_id="'.$dc_blog_id.'" ORDER BY link_position', ARRAY_A);
+		}
+		else
+		{
+			$sql = 'SELECT * FROM '.$dbprefix.'link ORDER BY link_position';
+		}
+		return $dcdb->get_results($sql, ARRAY_A);
 	}
 
 	function cat2wp($categories='')
@@ -606,6 +655,9 @@ class Dotclear2_Import extends WP_Importer {
 		delete_option('dcname');
 		delete_option('dchost');
 		delete_option('dccharset');
+
+		delete_option('dc_skip_blog_id');
+
 		do_action('import_done', 'dotclear');
 		$this->tips();
 	}
@@ -630,6 +682,7 @@ class Dotclear2_Import extends WP_Importer {
 
 	function db_form() {
 		echo '<table class="form-table">';
+		printf('<tr><th><label for="dc_blog_id">%s</label></th><td><input type="text" name="dc_blog_id" id="dc_blog_id" /></td></tr>', __('DotClear Blog Id:', 'dotclear2-importer'));
 		printf('<tr><th><label for="dbuser">%s</label></th><td><input type="text" name="dbuser" id="dbuser" /></td></tr>', __('DotClear Database User:', 'dotclear2-importer'));
 		printf('<tr><th><label for="dbpass">%s</label></th><td><input type="password" name="dbpass" id="dbpass" /></td></tr>', __('DotClear Database Password:', 'dotclear2-importer'));
 		printf('<tr><th><label for="dbname">%s</label></th><td><input type="text" name="dbname" id="dbname" /></td></tr>', __('DotClear Database Name:', 'dotclear2-importer'));
@@ -650,41 +703,47 @@ class Dotclear2_Import extends WP_Importer {
 		if ( $step > 0 ) {
 			check_admin_referer('import-dotclear');
 
-			if ($_POST['dbuser']) {
+			if (!empty($_POST['dbuser'])) {
 				if(get_option('dcuser'))
 					delete_option('dcuser');
 				add_option('dcuser', sanitize_user($_POST['dbuser'], true));
 			}
-			if ($_POST['dbpass']) {
+			if (!empty($_POST['dbpass'])) {
 				if(get_option('dcpass'))
 					delete_option('dcpass');
 				add_option('dcpass', sanitize_user($_POST['dbpass'], true));
 			}
 
-			if ($_POST['dbname']) {
+			if (!empty($_POST['dbname'])) {
 				if (get_option('dcname'))
 					delete_option('dcname');
 				add_option('dcname', sanitize_user($_POST['dbname'], true));
 			}
-			if ($_POST['dbhost']) {
+			if (!empty($_POST['dbhost'])) {
 				if(get_option('dchost'))
 					delete_option('dchost');
 				add_option('dchost', sanitize_user($_POST['dbhost'], true));
 			}
-			if ($_POST['dccharset']) {
+			if (!empty($_POST['dccharset'])) {
 				if (get_option('dccharset'))
 					delete_option('dccharset');
 				add_option('dccharset', sanitize_user($_POST['dccharset'], true));
 			}
-			if ($_POST['dbprefix']) {
+			if (!empty($_POST['dbprefix'])) {
 				if (get_option('dcdbprefix'))
 					delete_option('dcdbprefix');
 				add_option('dcdbprefix', sanitize_user($_POST['dbprefix'], true));
 			}
 
+			if (!empty($_POST['dc_blog_id'])) {
+				if (get_option('dc_blog_id'))
+					delete_option('dc_blog_id');
+				add_option('dc_blog_id', sanitize_user($_POST['dc_blog_id'], true));
+			}
 
 		}
-
+		// this works for me 
+		define('MYSQL_NEW_LINK', 1);
 		switch ($step) {
 			default:
 			case 0 :
