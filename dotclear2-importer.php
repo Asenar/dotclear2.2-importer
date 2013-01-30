@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: DotClear2 Importer
-Plugin URI: http://wordpress.org/extend/plugins/dotclear2-importer/
+Plugin Name: DotClear2.2 Importer
+Plugin URI: https://github.com/Asenar/dotclear2.2-importer
 Description: Import categories, users, posts, comments, and links from a DotClear blog.
-Author: kyon79
-Author URI: http://kyon.lg21.be/
-Version: 0.3
-Comment: forked from dotclear-importer 0.2
+Author: Asenar
+Author URI: 
+Version: 0.4
+Comment: forked from dotclear-importer 0.3 from kyon79
 License: GPL v2
 */
 
@@ -233,7 +233,7 @@ class Dotclear2_Import extends WP_Importer {
 		if (!empty($dc_blog_id))
 		{
 			$sql = 'SELECT * FROM '.$dbprefix.'link
-			WHERE blog_id="'.$dc_blog_id.'" ORDER BY link_position', ARRAY_A);
+			WHERE blog_id="'.$dc_blog_id.'" ORDER BY link_position';
 		}
 		else
 		{
