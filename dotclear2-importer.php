@@ -450,7 +450,13 @@ class Dotclear2_Import extends WP_Importer {
 				$post_status = $stattrans[$post_status];
 
 				// Import Post data into WordPress
-
+				// f** not found items
+				if (empty($post_modified_gmt))
+					$post_modified_gmt = '';
+				if (empty($post_nb_trackback))
+					$post_nb_trackback = '';
+				if (empty($post_nb_comment))
+					$post_nb_comment = '';
 				if ($pinfo = post_exists($Title,$post_content)) {
 					$ret_id = wp_insert_post(array(
 							'ID'			=> $pinfo,
@@ -494,7 +500,8 @@ class Dotclear2_Import extends WP_Importer {
 				// Make Post-to-Category associations
 				$cats = array();
 				$category1 = get_category_by_slug($post_cat_name);
-				$category1 = $category1->term_id;
+				if ($category1)
+					$category1 = $category1->term_id;
 
 				if ($cat1 = $category1) { $cats[1] = $cat1; }
 
@@ -641,11 +648,19 @@ class Dotclear2_Import extends WP_Importer {
 
 		echo '<form action="admin.php?import=dotclear&amp;step=3" method="post">';
 		wp_nonce_field('import-dotclear');
+		printf('<p>
+		<label for="dc_post_active_only">%s</label>
+		<input type="checkbox" name="dc_post_active_only" value="1" id="dc_post_active_only" /></p>', __('Import only active post:', 'dotclear2-importer'));
 		printf('<p class="submit"><input type="submit" name="submit" class="button" value="%s" /></p>', esc_attr__('Import Posts', 'dotclear2-importer'));
 		echo '</form>';
 	}
 
 	function import_posts() {
+		if (!empty($_POST['dc_post_active_only'])) {
+			if (get_option('dc_post_active_only'))
+				delete_option('dc_post_active_only');
+			add_option('dc_post_active_only', sanitize_user($_POST['dc_post_active_only'], true));
+		}
 		// Post Import
 		$posts = $this->get_dc_posts();
 		$result = $this->posts2wp($posts);
@@ -697,6 +712,7 @@ class Dotclear2_Import extends WP_Importer {
 		delete_option('dccharset');
 
 		delete_option('dc_skip_blog_id');
+		delete_option('dc_post_active_only');
 
 		do_action('import_done', 'dotclear');
 		$this->tips();
@@ -829,3 +845,4 @@ function dotclear_importer_init() {
     load_plugin_textdomain( 'dotclear2-importer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 add_action( 'init', 'dotclear_importer_init' );
+
