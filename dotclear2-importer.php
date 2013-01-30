@@ -158,9 +158,22 @@ class Dotclear2_Import extends WP_Importer {
 		}
 		else
 			$sql = 'SELECT * FROM '.$dbprefix.'user';
-		return $dcdb->get_results($sql, ARRAY_A);
 		// Get Users
-		return $dcdb->get_results('SELECT * FROM '.$dbprefix.'user', ARRAY_A);
+		$users = $dcdb->get_results($sql, ARRAY_A);
+		foreach ($users as &$user)
+		{
+			$user['permissions'] = trim($user['permissions'], '|');
+			$perms = preg_split('#'.preg_quote('|').'#', $user['permissions']);
+			if (in_array('admin', $perms)
+			)
+				$user['user_level'] = 9;
+			else
+			{
+				// @TODO I'm a lazy person, so everyone else at level 0
+				$user['user_level'] = 0;
+			}
+		}
+		return $users;
 	}
 
 	function get_dc_posts()
@@ -309,38 +322,59 @@ class Dotclear2_Import extends WP_Importer {
 
 		// Midnight Mojo
 		if (is_array($users)) {
-			echo '<p>'.__('Importing Users...', 'dotclear2-importer').'<br /><br /></p>';
+			echo '<div>'.__('Importing Users...', 'dotclear2-importer').'<br /><br /></div>';
 			foreach ($users as $user) {
 				$count++;
 				extract($user);
-
 				// Make Nice Variables
-				$name = $wpdb->escape(csc ($name));
-				$RealName = $wpdb->escape(csc ($user_displayname));
+				$user_name = $wpdb->escape(csc ($user_name));
+				$realname = $wpdb->escape(csc ($user_displayname));
+				// look first for user_id, then user_email, then name to match current wordpress user)
+				if (!$uinfo = get_user_by('login', $user_id))
+					if (!$uinfo = get_user_by('email', $user_email))
+						if (!$uinfo = get_user_by('login', $user_name))
+						{
+							echo "user not found"; // oO, how should I rely author <> post ? admin ?
+							$new_user = true;
+						}
+						else
+							echo "user found by dotclear user_name"; // delme later
+					else
+						echo "user found by dotclear user_email"; // delme later
+				else
+					echo '<div class="highlight">user found by dotclear user_id</div>';
+				 
+				 if ($uinfo) {
 
-				if ($uinfo = get_userdatabylogin($name)) {
-
+					$user_exists = true;
 					$ret_id = wp_insert_user(array(
 								'ID'		=> $uinfo->ID,
 								'user_login'	=> $user_id,
-								'user_nicename'	=> $Realname,
+								'user_nicename'	=> $realname,
 								'user_email'	=> $user_email,
 								'user_url'	=> 'http://',
-								'display_name'	=> $Realname)
+								'display_name'	=> $realname)
 								);
 				} else {
+					$user_exists = false;
 					$ret_id = wp_insert_user(array(
 								'user_login'	=> $user_id,
 								'user_nicename'	=> csc ($user_displayname),
 								'user_email'	=> $user_email,
 								'user_url'	=> 'http://',
-								'display_name'	=> $Realname)
+								'display_name'	=> $realname)
 								);
 				}
-				if(is_a($ret_id, 'WP_Error') && isset($ret_id->errors['existing_user_login'])) {
-					// User already exists, 
-					echo '<p>'.sprintf(__('Error! User <strong>%s</strong> already exists. Please reinstall a fresh copy of Wordpress with another first user name.', 'dotclear2-importer'), $user_id).'<br /><br /></p>';
-					return false;
+				if(is_a($ret_id, 'WP_Error')) {
+					// I don't want to stop just for one wrong user already existing or something.
+					// but I will be noticed anyway :)
+					if (isset($ret_id->errors['existing_user_login']))
+						// User already exists, 
+						echo '<div class="error">'.sprintf(__('Error! User <strong>%s</strong> already exists. You may prefer to reinstall a fresh copy of Wordpress with another first user name.', 'dotclear2-importer'), $user_id).'<br /><br /></div>';
+					else
+						// @TODO we should display the correct error message instead of that 
+						echo '<div class="error">'.sprintf(__('Error during insertion / update user <strong>$s</strong>! You may prefer to reinstall a fresh copy of Wordpress with another first user name.', 'dotclear2-importer'), $user_id).'<br /><br /></div>';
+						continue;
 				}
 
 				$dcid2wpid[$user_id] = $ret_id;
@@ -361,6 +395,12 @@ class Dotclear2_Import extends WP_Importer {
 				update_user_meta( $ret_id, 'rich_editing', 'false');
 				update_user_meta( $ret_id, 'first_name', csc ($user_firstname));
 				update_user_meta( $ret_id, 'last_name', csc ($user_name));
+				// and also noticed for a success import 
+				if ($user_exists)
+					echo '<div class="highlight">'.sprintf(__('%s (email %s) succesfully updated'), $user_name, $user_email).'</div>';
+				else
+					echo '<div class="highlight">'.sprintf(__('%s (email %s) succesfully imported'), $user_name, $user_email).'</div>';
+
 			}// End foreach($users as $user)
 
 			// Store id translation array for future use
@@ -396,7 +436,7 @@ class Dotclear2_Import extends WP_Importer {
 				$comment_status_map = array (0 => 'closed', 1 => 'open');
 
 				//Can we do this more efficiently?
-				$uinfo = ( get_userdatabylogin( $user_id ) ) ? get_userdatabylogin( $user_id ) : 1;
+				$uinfo = ( get_user_by('login', $user_id ) ) ? get_user_by('login', $user_id ) : 1;
 				$authorid = ( is_object( $uinfo ) ) ? $uinfo->ID : $uinfo ;
 
 				$Title = $wpdb->escape(csc ($post_title));
