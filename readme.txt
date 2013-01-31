@@ -23,7 +23,7 @@ Import categories, users, posts, comments, and links from a DotClear blog.
 1. Go to the Tools -> Import screen, Click on DotClear2
 
 == Changelog ==
-= 0.4 =
+= 0.4 (work in progress) =
 * Forked from dotclear-importer2
 * Added field "blog_id" to allow importation from one blog only
 * replaced deprecated function getuserdatabylogin($login) by get_user_by('login', $login)
@@ -31,6 +31,7 @@ Import categories, users, posts, comments, and links from a DotClear blog.
 * option to import only active post
 * option to skip comments import
 * option to skip links import
+* option to skip user importation + replace non-existent author by a default.
 
 = 0.3 =
 * Forked from dotclear-importer

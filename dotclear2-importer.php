@@ -436,7 +436,12 @@ class Dotclear2_Import extends WP_Importer {
 				$comment_status_map = array (0 => 'closed', 1 => 'open');
 
 				//Can we do this more efficiently?
-				$uinfo = ( get_user_by('login', $user_id ) ) ? get_user_by('login', $user_id ) : 1;
+				$dc_user_replace = get_option('dc_user_replace');
+				if ($dc_user_replace) {
+					$uinfo = ( get_user_by('login', $dc_user_replace ) ) ? get_user_by('login', $dc_user_replace ) : 1;
+				}
+				else
+					$uinfo = ( get_user_by('login', $user_id ) ) ? get_user_by('login', $user_id ) : 1;
 				$authorid = ( is_object( $uinfo ) ) ? $uinfo->ID : $uinfo ;
 
 				$Title = $wpdb->escape(csc ($post_title));
@@ -636,15 +641,34 @@ class Dotclear2_Import extends WP_Importer {
 
 		echo '<form action="admin.php?import=dotclear&amp;step=2" method="post">';
 		wp_nonce_field('import-dotclear');
+		printf('<p>
+			<label for="dc_skip_users">%s</label>
+			<input type="checkbox" name="dc_skip_users" value="1" id="dc_skip_users" /></p>', __('Skip users:', 'dotclear2-importer'));
+		printf('<p>
+			<label for="dc_user_replace">%s</label>
+			<input type="text" name="dc_user_replace" value="admin" id="dc_user_replace" /></p>',
+			__('If this is enabled, I want to use the default author :', 'dotclear2-importer'));
 		printf('<p class="submit"><input type="submit" name="submit" class="button" value="%s" /></p>', esc_attr__('Import Users', 'dotclear2-importer'));
 		echo '</form>';
 
 	}
 
 	function import_users() {
+		if (!empty($_POST['dc_skip_users'])) {
+			if (get_option('dc_skip_users'))
+				delete_option('dc_skip_users');
+			add_option('dc_skip_users', sanitize_user($_POST['dc_skip_users'], true));
+			if (get_option('dc_user_replace'))
+				delete_option('dc_user_replace');
+			add_option('dc_user_replace', sanitize_user($_POST['dc_user_replace'], true));
+		}
 		// User Import
-		$users = $this->get_dc_users();
-		$this->users2wp($users);
+		$dc_skip_users = get_option('dc_skip_users');
+		if (!$dc_skip_users) {
+			$users = $this->get_dc_users();
+			$this->users2wp($users);
+		}
+		else echo __('User importation has been skipped');
 
 		echo '<form action="admin.php?import=dotclear&amp;step=3" method="post">';
 		wp_nonce_field('import-dotclear');
