@@ -32,6 +32,7 @@ Import categories, users, posts, comments, and links from a DotClear blog.
 * option to skip comments import
 * option to skip links import
 * option to skip user importation + replace non-existent author by a default.
+* change default database charset to utf-8
 
 = 0.3 =
 * Forked from dotclear-importer

@@ -10,6 +10,15 @@ Comment: forked from dotclear-importer 0.3 from kyon79
 License: GPL v2
 */
 
+/** default value (charset, checkbox default status, ...)  **/
+
+
+/**
+ * Database charset used for the dotclear database
+ */
+$dc_db_default_charset = 'UTF-8';
+
+/******************/
 if ( !defined('WP_LOAD_IMPORTERS') )
 	return;
 
@@ -796,7 +805,7 @@ class Dotclear2_Import extends WP_Importer {
 		printf('<tr><th><label for="dbname">%s</label></th><td><input type="text" name="dbname" id="dbname" /></td></tr>', __('DotClear Database Name:', 'dotclear2-importer'));
 		printf('<tr><th><label for="dbhost">%s</label></th><td><input type="text" name="dbhost" id="dbhost" value="localhost" /></td></tr>', __('DotClear Database Host:', 'dotclear2-importer'));
 		printf('<tr><th><label for="dbprefix">%s</label></th><td><input type="text" name="dbprefix" id="dbprefix" value="dc_"/></td></tr>', __('DotClear Table prefix:', 'dotclear2-importer'));
-		printf('<tr><th><label for="dccharset">%s</label></th><td><input type="text" name="dccharset" id="dccharset" value="ISO-8859-15"/></td></tr>', __('Originating character set:', 'dotclear2-importer'));
+		printf('<tr><th><label for="dccharset">%s</label></th><td><input type="text" name="dccharset" id="dccharset" value="'.$dc_db_default_charset.'"/></td></tr>', __('Originating character set:', 'dotclear2-importer'));
 		echo '</table>';
 	}
 
